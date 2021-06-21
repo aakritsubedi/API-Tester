@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid p-4">
+  <div class="container-fluid">
     <Navbar />
     <div class="row mt-4">
       <div class="col-md-8">
@@ -33,7 +33,10 @@
                 placeholder="Request Name"
               />
               <div title="Clear All" style="cursor: pointer" @click="clear">
-                <i class="fas fa-bacon"></i>
+                <i
+                  class="fas fa-eraser"
+                  style="font-size: 20px; color: #de4839"
+                ></i>
               </div>
             </div>
           </div>
@@ -53,9 +56,23 @@
         <Response :response="response" :isWaiting="isWaiting" />
       </div>
       <div class="col-md-4">
-        <div class="card">
+        <div class="card histroy">
           <div class="card-body">
             <h3>History</h3>
+            <ul class="list-unstyled">
+              <li
+                v-for="(history, key) in histories"
+                :key="key"
+                @click="setDataFromHistory(key)"
+                style="cursor: pointer;"
+              >
+                <small class="text-info d-block">{{
+                  history.requestName
+                }}</small>
+                <span class="text-uppercase">{{ history.apiMethod }}</span>
+                <small class="text-muted">{{ history.apiURL }}</small>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -70,6 +87,8 @@ import prettyBytes from 'pretty-bytes'
 import Tabs from '@/components/Tabs.vue'
 import Navbar from '@/components/Navbar.vue'
 import Response from '@/components/Response.vue'
+
+import storageUtils from '@/utils/storageUtils'
 
 export default {
   name: 'MyPostman',
@@ -100,6 +119,7 @@ export default {
         data: '',
         error: false,
       },
+      histories: null,
     }
   },
   methods: {
@@ -198,6 +218,22 @@ export default {
       return response
     },
     sendRequest: async function () {
+      let history = storageUtils.get('history')
+      history = JSON.parse(history)
+
+      const storeData = {
+        requestName: this.requestName,
+        apiMethod: this.apiMethod,
+        apiURL: this.apiURL,
+        queryParams: this.queryParams,
+        requestBody: this.requestBody,
+        requestHeaders: this.requestHeaders,
+      }
+      history.push(storeData)
+      this.histories = history
+      console.log(this.histories)
+      storageUtils.set('history', JSON.stringify(history))
+
       this.error = false
       this.isLoading = true
       this.isWaiting = false
@@ -209,7 +245,7 @@ export default {
         headers: this.keyValuePairsToObject(this.requestHeaders),
         data: JSON.parse(this.requestBody),
       }
-      console.log(config)
+
       axios.interceptors.request.use((request) => {
         request.customData = request.customData || {}
         request.customData.startTime = new Date().getTime()
@@ -249,108 +285,29 @@ export default {
     updateRequestBody: function (body) {
       this.requestBody = body
     },
+    setDataFromHistory: function (id) {
+      const data = this.histories[id]
+
+      this.requestName = data.requestName
+      this.apiMethod = data.apiMethod
+      this.apiURL = data.apiURL
+      this.queryParams = data.queryParams
+      this.requestBody = data.requestBody
+      this.requestHeaders = data.requestHeaders
+    },
+  },
+  created() {
+    let history = storageUtils.get('history')
+    if (history == null) {
+      history = []
+      storageUtils.set('history', JSON.stringify(history))
+    }
+
+    this.histories = JSON.parse(history)
   },
 }
 </script>
 
 <style>
-/* Testing */
-.testing {
-  padding: 15px 0;
-}
-.label {
-  display: block;
-  font-size: 1rem;
-  color: #9b9b9b;
-  margin-bottom: 15px;
-}
-.api-methods {
-  border: none;
-  outline: none;
-  padding: 10px 15px;
-  background-color: #dfdfdf;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-.api-url {
-  width: 100%;
-  outline: none;
-  border-right: none;
-  padding-left: 10px;
-  border: 1px solid #ccc;
-}
-.api-send-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  outline: none;
-  border: none;
-  background-color: #54b87b;
-  color: #fff;
-  padding: 0px 15px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  cursor: pointer;
-}
-.btn-disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-.results {
-  margin: 15px 0;
-}
-.api-input {
-  display: none;
-  margin: 15px 0;
-}
-.api-name {
-  padding-left: 10px;
-  margin: 5px 0;
-  margin-right: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  height: 35px;
-  width: 100%;
-  outline: none;
-}
-.api-name:focus {
-  border: 1px solid #888;
-}
-.displayBlock {
-  display: block;
-}
-.api-input textarea {
-  width: 100%;
-  resize: none;
-  background-color: #ffffff;
-  text-align: left;
-  font-size: 16px;
-  outline: none;
-  color: #2e2e2e;
-  border-radius: 5px;
-  padding: 10px 8px;
-}
-.text-success {
-  color: #54b87b;
-}
-.text-danger {
-  color: #ff0000;
-}
-.border-green {
-  border: 1px solid #54b87b;
-}
-.border-red {
-  border: 1px solid #ff0000;
-}
-/* Response */
-.response-header {
-  display: flex;
-  justify-content: space-between;
-}
-.response-header .title {
-  flex: 5;
-}
-.response-header .status {
-  flex: 1;
-}
+@import url('@/assets/css/style.css');
 </style>

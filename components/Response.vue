@@ -1,6 +1,6 @@
 <template>
-  <div class="card">
-    <div class="card-body">
+  <div class="response-container">
+    <div class="">
       <div class="response-header">
         <div class="title">
           <h3>Response</h3>
@@ -55,7 +55,7 @@
             role="tabpanel"
             aria-labelledby="query-params-tab"
           >
-            <div>
+            <div class="response-body">
               <vue-json-pretty :path="'root'" :data="response.body" />
             </div>
           </div>

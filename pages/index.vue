@@ -1,8 +1,8 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid pb-5">
     <Navbar />
     <div class="row mt-4">
-      <div class="col-md-8">
+      <div class="col-md-7">
         <div class="card">
           <div class="card-body">
             <div style="display: flex">
@@ -53,28 +53,14 @@
           :updateRequestBody="updateRequestBody"
         />
         <hr />
-        <Response :response="response" :isWaiting="isWaiting" />
+        <History
+          :histories="histories"
+          :setDataFromHistory="setDataFromHistory"
+          :deleteHistory="deleteHistory"
+        />
       </div>
-      <div class="col-md-4">
-        <div class="card histroy">
-          <div class="card-body">
-            <h3>History</h3>
-            <ul class="list-unstyled">
-              <li
-                v-for="(history, key) in histories"
-                :key="key"
-                @click="setDataFromHistory(key)"
-                style="cursor: pointer;"
-              >
-                <small class="text-info d-block">{{
-                  history.requestName
-                }}</small>
-                <span class="text-uppercase">{{ history.apiMethod }}</span>
-                <small class="text-muted">{{ history.apiURL }}</small>
-              </li>
-            </ul>
-          </div>
-        </div>
+      <div class="col-md-5">
+        <Response :response="response" :isWaiting="isWaiting" />
       </div>
     </div>
   </div>
@@ -86,6 +72,7 @@ import prettyBytes from 'pretty-bytes'
 
 import Tabs from '@/components/Tabs.vue'
 import Navbar from '@/components/Navbar.vue'
+import History from '@/components/History.vue'
 import Response from '@/components/Response.vue'
 
 import storageUtils from '@/utils/storageUtils'
@@ -96,6 +83,7 @@ export default {
     Navbar,
     Tabs,
     Response,
+    History,
   },
   data() {
     return {
@@ -231,7 +219,7 @@ export default {
       }
       history.push(storeData)
       this.histories = history
-      console.log(this.histories)
+
       storageUtils.set('history', JSON.stringify(history))
 
       this.error = false
@@ -294,6 +282,11 @@ export default {
       this.queryParams = data.queryParams
       this.requestBody = data.requestBody
       this.requestHeaders = data.requestHeaders
+    },
+    deleteHistory: function (id) {
+      this.histories.splice(id, 1);
+
+      storageUtils.set('history', JSON.stringify(this.histories))
     },
   },
   created() {

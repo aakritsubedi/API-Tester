@@ -86,21 +86,39 @@
   border: 1px solid #de4839;
 }
 /* Response */
+.response-container {
+  height: calc(100vh - 100px);
+}
 .response-header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 .response-header .title {
-  flex: 5;
-}
-.response-header .status {
-  flex: 1;
-}
 
+}
+.response-header .status ul{
+  list-style: none;
+  padding: 0;
+}
+.status ul li {
+  display: inline;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.response-body {
+  max-height: 425px;
+  overflow-y: scroll;
+}
 /* History */
 .histroy {
-  height: calc(100vh - 100px);
+  height: 35vh;
   overflow-y: scroll;
+}
+.delete-icon {
+  float: right;
+  color: #de4839;
 }
 ::-webkit-scrollbar {
   width: 10px;

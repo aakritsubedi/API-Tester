@@ -2,7 +2,7 @@
   <div class="container-fluid pb-5">
     <Navbar />
     <div class="row mt-4">
-      <div class="col-md-7">
+      <div class="col-md-6">
         <div class="card">
           <div class="card-body">
             <div style="display: flex">
@@ -59,7 +59,7 @@
           :deleteHistory="deleteHistory"
         />
       </div>
-      <div class="col-md-5">
+      <div class="col-md-6">
         <Response :response="response" :isWaiting="isWaiting" />
       </div>
     </div>
@@ -102,7 +102,7 @@ export default {
         status: '',
         time: '',
         size: '',
-        body: '',
+        body: '...waiting for response',
         headers: '',
         data: '',
         error: false,

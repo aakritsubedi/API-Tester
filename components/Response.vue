@@ -77,6 +77,11 @@
           </div>
         </div>
       </div>
+      <div class="waiting-response" v-else>
+        <div class="test-your-api">
+          <img src="@/assets/images/waiting.jpeg" alt="Test Your API">
+        </div>
+      </div>
     </div>
   </div>
 </template>
